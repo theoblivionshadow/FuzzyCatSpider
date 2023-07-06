@@ -14,7 +14,7 @@ class Database():
         self.con.commit()
 
     # create task
-    def create_task(self, task, difficulty):
+    def insert_new_task(self, task, difficulty):
         self.cursor.execute("INSERT INTO tasks (task, difficulty, completed) VALUES (?,?,?)", (task, difficulty, 0))
         self.con.commit()
     
@@ -23,19 +23,19 @@ class Database():
         return created_task[-1]
     
     # get tasks
-    def get_tasks(self):
+    def select_all_tasks(self):
         '''Getting all tasks : completed and incompleted'''
         incompleted_tasks = self.cursor.execute("SELECT id, task, difficulty FROM tasks WHERE completed = 0").fetchall()
         completed_tasks = self.cursor.execute("SELECT id, task, difficulty FROM tasks WHERE completed = 1").fetchall()
         return completed_tasks, incompleted_tasks
     
     # update tasks
-    def mark_as_complete(self, taskid):
+    def check_done(self, taskid):
         '''Mark tasks as completed'''
         self.cursor.execute("UPDATE tasks SET completed = 1 WHERE id = ?", (taskid,))
         self.con.commit()
     
-    def mark_as_incomplete(self, taskid):
+    def check_toDo(self, taskid):
         '''Mark tasks as incompleted'''
         self.cursor.execute("UPDATE tasks SET completed = 0 WHERE id = ?", (taskid,))
         self.con.commit()
@@ -45,7 +45,7 @@ class Database():
         return task_text[0][0]
     
     # delete tasks
-    def delete_task(self, taskid):
+    def remove_task(self, taskid):
         '''Deleting task'''
         self.cursor.execute("DELETE FROM tasks WHERE id = ?", (taskid,))
         self.con.commit()
@@ -53,9 +53,9 @@ class Database():
     # select a specific task
     def select_task(self, taskid):
         '''Selecting task'''
-        task_text = self.cursor.execute("SELECT task, difficulty WHERE id = ?", (taskid))
+        task_text = self.cursor.execute("SELECT id, task, difficulty FROM tasks WHERE id = ?", (taskid,)).fetchall()
         return task_text
 
     # close connection
-    def close_db_connection(self):
+    def close_db_conn(self):
         self.con.close()

@@ -1,23 +1,97 @@
-MDFloatLayout:
-    MDLabel:
-        id: task_label
-        halign: 'center'
-        markup: True
-        text: "Task Quest"
-        font_style: "H5"
-        pos_hint: {'y': 0.45}
+MDScreen:
 
-    ScrollView:
-        pos_hint: {'center_y': 0.5, 'center_x': 0.5}
-        size_hint: 0.9, 0.8
-        MDList:
-            id: container
+    MDTopAppBar:
+        pos_hint: {"top": 1}
+        elevation: 4
+        title: "Menu"
+        left_action_items: [["menu", lambda x: nav_drawer.set_state("open")]]
 
-    MDFloatingActionButton:
-        icon: "plus-thick"
-        on_release: app.show_task_function()
-        elevation_normal: 12
-        pos_hint: {'x': 0.45, 'y': 0.04}
+    MDNavigationLayout:
+
+        MDScreenManager:
+            id: screen_manager
+
+            MDScreen:
+                name: "home"
+
+                MDFloatLayout:
+                    MDLabel:
+                        text: "Task Quest"
+                        halign: "center"
+                        font_style:"H5"
+                        pos_hint: {'y': 0.45}
+
+                    MDLabel:
+                        text: "     To Do"
+                        halign: "left"
+                        font_style: "Subtitle1"
+                        pos_hint: {'y': 0.35}
+
+                    ScrollView:
+                        pos_hint: {'center_y': 0.5, 'center_x': 0.5}
+                        size_hint: 0.9, 0.7
+                    
+                        MDList:
+                            id: task_display
+
+                    MDFloatingActionButton:
+                        icon: "dice-d20"
+                        theme_icon_color: 'Primary'
+                        on_release: app.rollForTask()
+                        elevation_normal: 12
+                        pos_hint: {'x': 0.45, 'y': 0.04}
+
+
+
+            MDScreen:
+                name: "tasks"
+                
+                MDFloatLayout:
+                    MDLabel:
+                        id: task_label
+                        halign: 'center'
+                        markup: True
+                        text: "Task List"
+                        font_style: "H5"
+                        pos_hint: {'y': 0.45}
+
+                    ScrollView:
+                        pos_hint: {'center_y': 0.5, 'center_x': 0.5}
+                        size_hint: 0.9, 0.8
+                        MDList:
+                            id: container
+
+                    MDFloatingActionButton:
+                        icon: "plus-thick"
+                        on_release: app.show_tasks()
+                        elevation_normal: 12
+                        pos_hint: {'x': 0.45, 'y': 0.04}
+
+        MDNavigationDrawer:
+            id: nav_drawer
+            radius: (0, 16, 16, 0)
+
+            ContentNavDrawer:
+                screen_manager: screen_manager
+                nav_drawer: nav_drawer
+
+
+
+<ContentNavDrawer>
+    MDList:
+
+        OneLineListItem:
+            text: "Task Quest"
+            on_press:
+                root.nav_drawer.set_state("close")
+                root.screen_manager.current = "home"
+
+        OneLineListItem:
+            text: "Manage Tasks"
+            on_press:
+                root.nav_drawer.set_state("close")
+                root.screen_manager.current = "tasks"
+
 
 <DialogContent>
     orientation: 'vertical'
@@ -57,15 +131,35 @@ MDFloatLayout:
                 on_release: (app.close_dialog())
 
 <ListItemWithCheckbox>
-    id: the_list_item
+    id: list_task
     markup: True
 
     LeftCheckbox:
         id: check
-        on_release: root.mark(check, the_list_item)
+        on_release: root.mark(check, list_task)
     
     IconRightWidget:
         icon: "trash-can-outline"
         theme_text_color: "Custom"
         text_color: 1, 0, 0, 1
-        on_release: root.delete_item(the_list_item)
+        on_release: root.delete_item(list_task)
+
+<TaskQuestWithCheckbox>
+    id: quest_task
+    markup: True
+
+    LeftCheckbox:
+        id: check
+        on_release: root.mark(check, quest_task)
+
+<TaskQuest>
+    orientation: 'vertical'
+    spacing: "10dp"
+    size_hint: 1, None
+    height: "130dp"
+
+    GridLayout:
+        rows: 4
+
+        BoxLayout:
+            orientation: 'vertical'
